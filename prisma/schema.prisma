@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Staff {
+  id Int @id @unique @default(autoincrement())
+
+  avatar    String
+  robloxId  String @unique
+  discordId String @unique
+
+  robloxUsername  String
+  discordUsername String
+
+  rank   Rank @relation(references: [id], fields: [rankId])
+  rankId Int
+
+  sessions        Session[]
+  hostedFlights   Flight[]  @relation("Host")
+  attendedFlights Flight[]  @relation("Attendees")
+
+  flightSignups       FlightSignup[]
+  captainFlights      Flight[]       @relation("CaptainOfFlight")
+  firstOfficerFlights Flight[]       @relation("FirstOfficerOfFlight")
+
+  inflightTLFlights  Flight[] @relation("InflightTL")
+  groundOpsTLFlights Flight[] @relation("GroundOpsTL")
+  sesTLFlights       Flight[] @relation("SesTL")
+
+  suspended Boolean @default(false)
+}
+
+model FlightSignup {
+  id Int @id @unique @default(autoincrement())
+
+  flight   Flight @relation(fields: [flightId], references: [id])
+  flightId Int
+
+  staff   Staff @relation(fields: [staffId], references: [id])
+  staffId Int
+
+  preferredRole String?
+}
+
+model Session {
+  id String @id
+
+  ipAddress String
+  userAgent String
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user    Staff @relation(fields: [staffId], references: [id])
+  staffId Int
+}
+
+model Flight {
+  // Actual Flight Info
+
+  id           Int          @id @unique @default(autoincrement())
+  flightNumber String
+  flightStatus FlightStatus // schedulled = enough staff, cancelled = cancelled, requested = waiting for enough leadership staff
+  attendees    Staff[]      @relation("Attendees")
+
+  signUps FlightSignup[]
+
+  airport  String
+  aircraft String
+  gate     String
+
+  // Host Info
+
+  host   Staff @relation("Host", references: [id], fields: [hostId])
+  hostId Int
+
+  // Flight Deck
+
+  captain   Staff? @relation("CaptainOfFlight", fields: [captainId], references: [id])
+  captainId Int
+
+  firstOfficer   Staff? @relation("FirstOfficerOfFlight", fields: [firstOfficerId], references: [id])
+  firstOfficerId Int
+
+  // Team Leads
+
+  inflightTL   Staff? @relation("InflightTL", fields: [inflightTLId], references: [id])
+  inflightTLId Int?
+
+  groundOpsTL   Staff? @relation("GroundOpsTL", fields: [groundOpsTLId], references: [id])
+  groundOpsTLId Int?
+
+  sesTL   Staff? @relation("SesTL", fields: [sesTLId], references: [id])
+  sesTLId Int?
+}
+
+enum FlightStatus {
+  Scheduled
+  Cancelled
+  Requested
+}
+
+model Rank {
+  id           Int    @id @unique @default(autoincrement())
+  displayOrder Int    @default(autoincrement()) // In order it'll be displayed on the staff list, and to prevent a staff giving themselves a higher role
+  name         String
+
+  staff Staff[] // Self explainitory, staff that have the role, they can only have one at any given time.
+
+  manageFlights       Boolean @default(false) // Flight Planning
+  submitReports       Boolean @default(false) // View/Create Flight Reports
+  manageBlacklist     Boolean @default(false) // Manage Flure Blacklist, list of banned users can be accessed via an endpoint
+  manageStaff         Boolean @default(false) // Displinary Actions, Create New Staff, update Existing staff
+  manageTrainings     Boolean @default(false) // Add trainings, create trainings, add attendees
+  manageDocumentation Boolean @default(false) // Add docs for staff to view
+}
