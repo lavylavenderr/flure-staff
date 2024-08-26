@@ -97,6 +97,8 @@ model Flight {
 
   sesTL   Staff? @relation("SesTL", fields: [sesTLId], references: [id])
   sesTLId Int?
+
+  dateTime DateTime
 }
 
 enum FlightStatus {

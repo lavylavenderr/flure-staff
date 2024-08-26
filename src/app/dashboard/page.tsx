@@ -16,33 +16,56 @@ import { Overview } from "./components/overview";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { YearOverview } from "./components/year";
+import { endOfMonth, startOfMonth } from "date-fns";
 
 export default async function StaffHome() {
   const { user } = await validateRequest();
   if (!user) redirect("/login");
 
+  let attendedFlights = 0;
   const usrData = await prisma.staff.findUnique({
     where: {
       id: user.id,
     },
   });
 
-  // temp data for testing
-  const dummyData = Array(5).fill({
-    avatar: usrData?.avatar,
-    username: "Lavender",
-    handle: "@technicolourlavender",
+  const staffCount = await prisma.staff.findMany({
+    orderBy: {
+      id: "desc",
+    },
   });
+
+  const flightsMonthly = await prisma.flight.findMany({
+    where: {
+      dateTime: {
+        gte: startOfMonth(new Date()),
+        lte: endOfMonth(new Date()),
+      },
+    },
+    include: {
+      attendees: true,
+    },
+  });
+
+  for (const flight of flightsMonthly) {
+    for (const attendee of flight.attendees) {
+      if (attendee.id == user.id) {
+        attendedFlights = attendedFlights + 1;
+      }
+    }
+  }
 
   return (
     <>
       <div className="px-4 sm:px-6 lg:px-8 h-full">
-      <h1 className="text-2xl font-semibold border-b border-gray-200 pb-3">Dashboard</h1>
+        <h1 className="text-2xl font-semibold border-b border-gray-200 pb-3">
+          Dashboard
+        </h1>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-4">
           <Card>
             <CardHeader className="flex flex-wrap mt-1 space-y-0 ">
               <CardTitle className="text-lg font-bold">
-                Welcome back, {usrData?.discordUsername}!
+                Welcome back, {usrData?.robloxUsername}!
               </CardTitle>
               <CardDescription>Make yourself at home.</CardDescription>
             </CardHeader>
@@ -55,7 +78,7 @@ export default async function StaffHome() {
               <Calendar className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">12</div>
+              <div className="text-2xl font-bold">{flightsMonthly.length}</div>
             </CardContent>
           </Card>
           <Card>
@@ -66,7 +89,7 @@ export default async function StaffHome() {
               <Megaphone className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">1</div>
+              <div className="text-2xl font-bold">{attendedFlights}</div>
             </CardContent>
           </Card>
           <Card>
@@ -75,7 +98,7 @@ export default async function StaffHome() {
               <User className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">81</div>
+              <div className="text-2xl font-bold">{staffCount.length}</div>
             </CardContent>
           </Card>
         </div>
@@ -94,22 +117,22 @@ export default async function StaffHome() {
             </CardHeader>
             <CardContent>
               <div className="space-y-8">
-                {dummyData.map((usrData, index) => (
+                {staffCount.slice(0,5).map((usrData, index) => (
                   <div className="flex items-center" key={index}>
                     <Avatar className="h-9 w-9">
                       <AvatarImage
                         src={usrData?.avatar}
                         alt="Avatar"
-                        className={generateRandomColor(usrData.username)}
+                        className={generateRandomColor(usrData.robloxUsername)}
                       />
                       <AvatarFallback>UwU</AvatarFallback>
                     </Avatar>
                     <div className="ml-4 space-y-1">
                       <p className="text-sm font-medium leading-none">
-                        {usrData.username}
+                        {usrData.discordUsername}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {usrData.handle}
+                        {usrData.robloxUsername}
                       </p>
                     </div>
                   </div>
