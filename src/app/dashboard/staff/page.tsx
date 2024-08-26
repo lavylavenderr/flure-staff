@@ -45,8 +45,8 @@ export default async function StaffList() {
 
   return (
     <>
-      <div>
-        <h1 className="mt-4 text-2xl font-semibold">Staff Members</h1>
+      <div className="px-4 sm:px-6 lg:px-8 h-full">
+        <h1 className="text-2xl font-semibold border-b border-gray-200 pb-3">Staff Members</h1>
         {staffMem?.rank.manageStaff ? (
           <div className="flex flex-row mb-1 mt-4 gap-2">
             <Button className="bg-green-600 hover:bg-green-700 flex items-center gap-1">
@@ -61,7 +61,11 @@ export default async function StaffList() {
         ) : (
           <></>
         )}
-        <DataTable columns={columns} data={sortedStaffInfo} manageStaff={staffMem!.rank.manageStaff} />
+        <DataTable
+          columns={columns}
+          data={sortedStaffInfo}
+          manageStaff={staffMem!.rank.manageStaff}
+        />
       </div>
     </>
   );

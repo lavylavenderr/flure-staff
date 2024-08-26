@@ -36,7 +36,8 @@ export default async function StaffHome() {
 
   return (
     <>
-      <div className="mt-4">
+      <div className="px-4 sm:px-6 lg:px-8 h-full">
+      <h1 className="text-2xl font-semibold border-b border-gray-200 pb-3">Dashboard</h1>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-4">
           <Card>
             <CardHeader className="flex flex-wrap mt-1 space-y-0 ">

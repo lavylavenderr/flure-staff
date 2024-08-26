@@ -56,7 +56,7 @@ model Session {
   expiresAt DateTime
   createdAt DateTime @default(now())
 
-  staff    Staff @relation(fields: [userId], references: [id])
+  staff  Staff @relation(fields: [userId], references: [id])
   userId Int
 }
 
@@ -112,10 +112,10 @@ model Rank {
 
   staff Staff[] // Self explainitory, staff that have the role, they can only have one at any given time.
 
-  manageFlights       Boolean @default(false) // Flight Planning
-  submitReports       Boolean @default(false) // View/Create Flight Reports
-  manageBlacklist     Boolean @default(false) // Manage Flure Blacklist, list of banned users can be accessed via an endpoint
-  manageStaff         Boolean @default(false) // Displinary Actions, Create New Staff, update Existing staff
-  manageTrainings     Boolean @default(false) // Add trainings, create trainings, add attendees
-  manageDocumentation Boolean @default(false) // Add docs for staff to view
+  manageLOA       Boolean @default(false)
+  manageFlights   Boolean @default(false)
+  manageBlacklist Boolean @default(false) // Manage Flure Blacklist, list of banned users can be accessed via an endpoint
+  manageStaff     Boolean @default(false) // Displinary Actions, Create New Staff, update Existing staff
+  manageTrainings Boolean @default(false) // Add trainings, create trainings, add attendees
+  isFlureLead     Boolean @default(false) // Add docs for staff to view
 }
