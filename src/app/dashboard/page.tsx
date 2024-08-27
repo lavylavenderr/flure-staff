@@ -57,7 +57,7 @@ export default async function StaffHome() {
 
   return (
     <>
-      <div className="px-4 sm:px-6 lg:px-8 h-full">
+      <div className="animate-in slide-in-from-left px-4 sm:px-6 lg:px-8 h-full">
         <h1 className="text-2xl font-semibold border-b border-gray-200 pb-3">
           Dashboard
         </h1>

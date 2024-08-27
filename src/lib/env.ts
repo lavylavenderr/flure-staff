@@ -7,7 +7,9 @@ const envSchema = z.object({
     DATABASE_URL: z.string(),
     DISCORD_CLIENTID: z.string(),
     DISCORD_CLIENTSECRET: z.string(),
-    DISCORD_REDIRECT_URL: z.string()
+    DISCORD_REDIRECT_URL: z.string(),
+    ROBLOX_COOKIE: z.string(),
+    DISCORD_TOKEN: z.string()
 })
 
 type env = z.infer<typeof envSchema>

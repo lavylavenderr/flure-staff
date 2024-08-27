@@ -5,6 +5,10 @@ export type Staff = {
     robloxUsername: string;
     discordUsername: string;
     rank: string;
+    rankId: number;
+    robloxId: string;
+    discordId: string;
+    rankViewOrder: number;
 }
 
 export const columns: ColumnDef<Staff>[] = [

@@ -25,6 +25,7 @@ export default async function StaffList() {
         select: {
           name: true,
           displayOrder: true,
+          id: true,
         },
       },
     },
@@ -40,6 +41,10 @@ export default async function StaffList() {
       robloxUsername: staff.robloxUsername,
       discordUsername: staff.discordUsername,
       rank: staff.rank.name,
+      rankId: staff.rank.id,
+      robloxId: staff.robloxId,
+      discordId: staff.discordId,
+      rankViewOrder: staff.rank.displayOrder
     });
   }
 
@@ -62,9 +67,11 @@ export default async function StaffList() {
           <></>
         )}
         <DataTable
+          userId={user.id}
           columns={columns}
           data={sortedStaffInfo}
           manageStaff={staffMem!.rank.manageStaff}
+          rankOrder={staffMem!.rank.displayOrder}
         />
       </div>
     </>
