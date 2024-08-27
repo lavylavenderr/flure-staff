@@ -52,20 +52,6 @@ export default async function StaffList() {
     <>
       <div className="px-4 sm:px-6 lg:px-8 h-full">
         <h1 className="text-2xl font-semibold border-b border-gray-200 pb-3">Staff Members</h1>
-        {staffMem?.rank.manageStaff ? (
-          <div className="flex flex-row mb-1 mt-4 gap-2">
-            <Button className="bg-green-600 hover:bg-green-700 flex items-center gap-1">
-              <Plus className="h-4 w-4 mt-[2px]" />
-              <span>Add Staff</span>
-            </Button>
-            <Button className="bg-yellow-600 hover:bg-yellow-700 flex items-center gap-1">
-              <RefreshCw className="h-4 w-4 mt-[2px]" />
-              <span>Reactivate Account</span>
-            </Button>
-          </div>
-        ) : (
-          <></>
-        )}
         <DataTable
           userId={user.id}
           columns={columns}

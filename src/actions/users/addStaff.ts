@@ -7,15 +7,14 @@ import ky from "ky";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 
-const formSchema = z.object({
+const staffSchema = z.object({
   discordId: z.string(),
   robloxId: z.string(),
   rankId: z.string(),
-  staffId: z.number(),
 });
 
-export const updateUser = async (formData: z.infer<typeof formSchema>) =>
-  schemaAndAuth(formSchema, formData, async (data, user) => {
+export const addStaff = async (formData: z.infer<typeof staffSchema>) =>
+  schemaAndAuth(staffSchema, formData, async (data, user) => {
     let robloxUsername: string;
     let userInfo: any;
     let robloxAvatar;
@@ -44,26 +43,26 @@ export const updateUser = async (formData: z.infer<typeof formSchema>) =>
     } catch {
       throw new Error("INVALID_DISCORD");
     }
+
     const rank = await prisma.rank.findUnique({
       where: { id: parseInt(formData.rankId) },
     });
-    if (!rank) throw new Error("Invalid Rank");
+    if (!rank) throw new Error("INVALID_RANK");
 
     const requestingUser = await prisma.staff.findUnique({
       where: { id: user.id },
       include: { rank: true },
     });
-    if (!requestingUser) throw new Error("Unauthorized");
+    if (!requestingUser) throw new Error("UNAUTHORIZED");
     if (rank.displayOrder <= requestingUser.rank.displayOrder)
-      throw new Error("Cannot Manage Users Higher Than You");
+      throw new Error("INVALID_RANK");
 
-    await prisma.staff.update({
-      where: { id: formData.staffId },
+    await prisma.staff.create({
       data: {
         robloxId: formData.robloxId,
         robloxUsername: robloxUsername,
-        discordUsername: userInfo.username,
         discordId: formData.discordId,
+        discordUsername: userInfo.username,
         rank: {
           connect: {
             id: parseInt(formData.rankId),
@@ -73,7 +72,5 @@ export const updateUser = async (formData: z.infer<typeof formSchema>) =>
       },
     });
 
-    return {
-      message: "OK",
-    };
+    return formData;
   });
